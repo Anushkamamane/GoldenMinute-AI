@@ -1,0 +1,50 @@
+.wrap { display: flex; flex-direction: column; gap: 1rem; animation: fadeIn 0.4s ease; }
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.legendItem { display: flex; align-items: center; gap: 6px; }
+
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+.note { margin-left: auto; font-size: 11px; }
+
+.mapWrap {
+  background: #0D1117;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.svg { width: 100%; height: auto; display: block; }
+
+.volList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.volItem {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;
+  transition: border-color 0.15s;
+  font-size: 12px;
+}
+
+.volItem.volActive { border-color: rgba(255,255,255,0.2); }
+
+.volDot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.volName { font-weight: 500; flex: 1; }
+.volArea { color: var(--muted); font-size: 11px; }
+.volCalls { color: var(--amber); font-size: 11px; white-space: nowrap; }

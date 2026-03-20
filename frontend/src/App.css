@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red:     #E63946;
+  --red-dim: rgba(230,57,70,0.12);
+  --amber:   #F4A261;
+  --green:   #2DC653;
+  --green-dim: rgba(45,198,83,0.1);
+  --bg:      #0B0E14;
+  --surface: #111620;
+  --card:    #161C2A;
+  --border:  rgba(255,255,255,0.07);
+  --text:    #EEF0F4;
+  --muted:   rgba(238,240,244,0.45);
+  --pulse:   rgba(230,57,70,0.6);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+h1, h2, h3, .heading {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+/* Pulse animation for live indicator */
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--pulse); }
+  50%       { box-shadow: 0 0 0 8px transparent; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { animation: fadeIn 0.4s ease forwards; }
+
+.live-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: pulse 1.8s infinite;
+}

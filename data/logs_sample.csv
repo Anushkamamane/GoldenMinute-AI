@@ -1,0 +1,6 @@
+call_sid,caller,emergency_type,severity,language,started_at,ended_at,duration_s,volunteer_name,volunteer_dist_km,status
+CA001,+919800001111,cardiac_arrest,critical,hi,2024-01-15T06:12:00Z,2024-01-15T06:17:12Z,312,Rajan Sharma,1.2,completed
+CA002,+917600002222,choking,high,en,2024-01-15T08:45:00Z,2024-01-15T08:48:07Z,187,Priya Nair,0.8,completed
+CA003,+916200003333,stroke,critical,hi,2024-01-15T09:30:00Z,2024-01-15T09:37:00Z,420,,, completed
+CA004,+919900004444,breathing_difficulty,high,mr,2024-01-15T11:15:00Z,2024-01-15T11:19:05Z,245,Amit Kulkarni,2.1,completed
+CA005,+918800005555,seizure,high,hi,2024-01-15T13:22:00Z,2024-01-15T13:25:55Z,235,Sunita Desai,1.5,completed
