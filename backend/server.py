@@ -47,12 +47,17 @@ def handle_emergency():
     speech   = data.get("speech", "").strip()
     caller   = data.get("caller", "Unknown")
     city     = data.get("city", "unknown")
+    caller_lat = data.get("lat", data.get("latitude"))
+    caller_lon = data.get("lon", data.get("longitude"))
     call_sid = data.get("call_sid") or str(uuid.uuid4())
 
     if not speech:
         return jsonify({"error": "No speech text provided"}), 400
 
-    logger.info(f"Emergency | SID:{call_sid} | caller:{caller} | city:{city}")
+    logger.info(
+        f"Emergency | SID:{call_sid} | caller:{caller} | city:{city} "
+        f"| lat:{caller_lat} | lon:{caller_lon}"
+    )
     logger.info(f"Speech: {speech}")
 
     # 1. Log call start
@@ -70,9 +75,14 @@ def handle_emergency():
     )
 
     # 4. Find ALL nearby volunteers
-    all_volunteers = volunteer_db.find_all_nearby(caller, city)
+    all_volunteers = volunteer_db.find_all_nearby(
+        caller,
+        city,
+        caller_lat=caller_lat,
+        caller_lon=caller_lon,
+    )
 
-    # 5. SMS every volunteer within 5km
+    # 5. Notify every volunteer within 5km
     sms_results = []
     for volunteer in all_volunteers:
         sent = sms_notifier.alert_volunteer(
@@ -205,14 +215,40 @@ def index():
     .vol { margin-top: 10px; padding: 10px; background: #161c2a; border-radius: 8px; font-size: 13px; color: #aaa; }
     .error { background: #2a0f0f; border-left: 3px solid #e63946; padding: 1rem; border-radius: 8px; margin-top: 16px; color: #f99; font-size: 13px; display: none; }
     .loading { text-align: center; padding: 1rem; color: #aaa; display: none; }
+        .location-card { margin-top: 12px; padding: 12px; border: 1px solid #2b3242; border-radius: 10px; background: #111827; }
+        .location-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; color: #d7deea; font-size: 14px; }
+        .location-row input[type="radio"] { width: auto; }
+        .hidden { display: none; }
   </style>
 </head>
 <body>
   <h2>🚨 GoldenMinute AI</h2>
   <label>Emergency (Hindi / English / Marathi)</label>
   <textarea id="speech" placeholder="mere papa ko chest mein dard ho raha hai..."></textarea>
-  <label>City</label>
-  <input id="city" value="pune" />
+
+    <div class="location-card">
+        <label>Choose Location Mode</label>
+        <div class="location-row">
+            <input type="radio" id="mode_current" name="location_mode" value="current" checked />
+            <label for="mode_current" style="margin:0">Use Current Location (GPS)</label>
+        </div>
+        <div class="location-row">
+            <input type="radio" id="mode_manual" name="location_mode" value="manual" />
+            <label for="mode_manual" style="margin:0">Enter City Manually</label>
+        </div>
+
+        <div id="current_location_panel">
+            <label>Detected Location</label>
+            <input id="loc_status" value="Checking browser GPS..." readonly />
+            <button type="button" onclick="refreshLocation()">📍 Refresh Current Location</button>
+        </div>
+
+        <div id="manual_city_panel" class="hidden">
+            <label>Enter City</label>
+            <input id="city" value="" placeholder="e.g. pune" />
+        </div>
+    </div>
+
   <label>Your Phone Number</label>
   <input id="caller" placeholder="+919876543210" />
   <button onclick="send()">🚨 Send Emergency</button>
@@ -225,21 +261,95 @@ def index():
   </div>
   <div class="error" id="error"></div>
   <script>
+        let currentLocation = { lat: null, lon: null };
+      let locationMode = 'current';
+
+        function setLocStatus(text) {
+            document.getElementById('loc_status').value = text;
+        }
+
+        function getCurrentLocation() {
+            return new Promise((resolve) => {
+                if (!navigator.geolocation) {
+                    setLocStatus('GPS not supported in this browser. Using city fallback.');
+                    resolve(null);
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        currentLocation.lat = Number(pos.coords.latitude.toFixed(6));
+                        currentLocation.lon = Number(pos.coords.longitude.toFixed(6));
+                        setLocStatus(`Lat ${currentLocation.lat}, Lon ${currentLocation.lon}`);
+                        resolve(currentLocation);
+                    },
+                    () => {
+                        setLocStatus('GPS permission denied/unavailable. Using city fallback.');
+                        resolve(null);
+                    },
+                    { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+                );
+            });
+        }
+
+        async function refreshLocation() {
+            setLocStatus('Checking browser GPS...');
+            await getCurrentLocation();
+        }
+
+        function updateLocationMode() {
+            const currentPanel = document.getElementById('current_location_panel');
+            const manualPanel = document.getElementById('manual_city_panel');
+            const selected = document.querySelector('input[name="location_mode"]:checked');
+            locationMode = selected ? selected.value : 'current';
+
+            if (locationMode === 'manual') {
+                currentPanel.classList.add('hidden');
+                manualPanel.classList.remove('hidden');
+            } else {
+                currentPanel.classList.remove('hidden');
+                manualPanel.classList.add('hidden');
+            }
+        }
+
     async function send() {
       const speech = document.getElementById('speech').value.trim();
       if (!speech) { alert('Please describe the emergency'); return; }
+
+            updateLocationMode();
+
+            if (locationMode === 'current' && (currentLocation.lat === null || currentLocation.lon === null)) {
+                await getCurrentLocation();
+            }
+
+            if (locationMode === 'manual') {
+                const cityValue = (document.getElementById('city').value || '').trim();
+                if (!cityValue) {
+                    alert('Please enter a city name');
+                    return;
+                }
+            }
+
       document.getElementById('loading').style.display = 'block';
       document.getElementById('result').style.display = 'none';
       document.getElementById('error').style.display = 'none';
       try {
+                const payload = {
+                    speech: speech,
+                    caller: document.getElementById('caller').value || 'unknown',
+                    city:   locationMode === 'manual'
+                        ? (document.getElementById('city').value.trim() || 'unknown')
+                        : 'unknown'
+                };
+                if (locationMode === 'current' && currentLocation.lat !== null && currentLocation.lon !== null) {
+                    payload.lat = currentLocation.lat;
+                    payload.lon = currentLocation.lon;
+                }
+
         const res = await fetch('/api/emergency', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            speech: speech,
-            caller: document.getElementById('caller').value || 'unknown',
-            city:   document.getElementById('city').value
-          })
+                    body: JSON.stringify(payload)
         });
         const data = await res.json();
         document.getElementById('loading').style.display = 'none';
@@ -255,6 +365,12 @@ def index():
         document.getElementById('error').style.display = 'block';
       }
     }
+
+        document.querySelectorAll('input[name="location_mode"]').forEach((el) => {
+            el.addEventListener('change', updateLocationMode);
+        });
+        updateLocationMode();
+        refreshLocation();
   </script>
 </body>
 </html>"""

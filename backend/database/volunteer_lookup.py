@@ -35,20 +35,42 @@ def haversine_km(lat1, lon1, lat2, lon2) -> float:
 class VolunteerLookup:
     MAX_RADIUS_KM = 5.0
 
-    def find_nearest(self, caller_number: str, caller_city: str) -> Optional[dict]:
+    @staticmethod
+    def _to_float(value) -> float | None:
+        try:
+            if value is None or value == "":
+                return None
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    def _resolve_caller_coords(self, caller_city: str, caller_lat=None, caller_lon=None) -> tuple[float, float, str]:
+        """
+        Prefer precise client GPS coordinates when available.
+        Fallback to city centroid if coordinates are missing/invalid.
+        """
+        lat = self._to_float(caller_lat)
+        lon = self._to_float(caller_lon)
+        if lat is not None and lon is not None and -90 <= lat <= 90 and -180 <= lon <= 180:
+            return lat, lon, "coordinates"
+
+        city_key = (caller_city or "unknown").lower().strip()
+        lat, lon = CITY_COORDS.get(city_key, CITY_COORDS["unknown"])
+        return lat, lon, "city"
+
+    def find_nearest(self, caller_number: str, caller_city: str, caller_lat=None, caller_lon=None) -> Optional[dict]:
         """Returns the single nearest volunteer — used for response display."""
-        volunteers = self.find_all_nearby(caller_number, caller_city)
+        volunteers = self.find_all_nearby(caller_number, caller_city, caller_lat=caller_lat, caller_lon=caller_lon)
         return volunteers[0] if volunteers else None
 
-    def find_all_nearby(self, caller_number: str, caller_city: str) -> list:
+    def find_all_nearby(self, caller_number: str, caller_city: str, caller_lat=None, caller_lon=None) -> list:
         """
         Returns ALL available certified volunteers within MAX_RADIUS_KM,
         sorted by distance. Every one of them will get an SMS alert.
         """
         try:
             db = get_db()
-            city_key = caller_city.lower().strip()
-            caller_lat, caller_lon = CITY_COORDS.get(city_key, CITY_COORDS["unknown"])
+            caller_lat, caller_lon, coord_source = self._resolve_caller_coords(caller_city, caller_lat, caller_lon)
 
             data = db.get("volunteers")
             if not data or not isinstance(data, dict):
@@ -71,7 +93,10 @@ class VolunteerLookup:
             # Sort by distance — closest first
             nearby.sort(key=lambda x: x["distance_km"])
 
-            logger.info(f"Found {len(nearby)} volunteers within {self.MAX_RADIUS_KM}km of {caller_city}")
+            logger.info(
+                f"Found {len(nearby)} volunteers within {self.MAX_RADIUS_KM}km "
+                f"using {coord_source} ({caller_lat:.5f}, {caller_lon:.5f})"
+            )
             for v in nearby:
                 logger.info(f"  - {v['name']} ({v['distance_km']} km) {v['phone']}")
 

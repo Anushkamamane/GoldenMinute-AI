@@ -10,6 +10,9 @@ so we call the REST API directly with the database URL from .env.
 import os
 import logging
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
