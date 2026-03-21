@@ -4,14 +4,31 @@
  * Set REACT_APP_API_URL in your .env file.
  */
 
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const configuredBaseUrl = (process.env.REACT_APP_API_URL || "").trim();
+
+// When the app is opened from a remote URL (codespaces/tunnels), browser
+// localhost does not point to the backend container. In that case use relative
+// /api paths so CRA proxy can forward requests in development.
+const host = typeof window !== "undefined" ? window.location.hostname : "";
+const isLocalHost = host === "localhost" || host === "127.0.0.1";
+const configuredToLocalHost = /localhost|127\.0\.0\.1/.test(configuredBaseUrl);
+
+const BASE_URL = !isLocalHost && configuredToLocalHost ? "" : configuredBaseUrl;
 
 async function apiFetch(path, options = {}) {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
-  if (!res.ok) throw new Error(`API error ${res.status}: ${path}`);
+  const url = `${BASE_URL}${path}`;
+  let res;
+
+  try {
+    res = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+      ...options,
+    });
+  } catch (err) {
+    throw new Error(`Network error while calling ${url}. Check backend/proxy settings.`);
+  }
+
+  if (!res.ok) throw new Error(`API error ${res.status}: ${url}`);
   return res.json();
 }
 
