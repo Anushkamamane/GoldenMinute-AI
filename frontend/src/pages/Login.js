@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styles from "./Login.module.css";
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, onRegister }) {
   const [password, setPassword] = useState("");
   const [error, setError]       = useState("");
 
@@ -36,6 +36,14 @@ export default function Login({ onLogin }) {
         {error && <p className={styles.error}>{error}</p>}
 
         <button className={styles.btn} onClick={submit}>Access Dashboard</button>
+
+        <div className={styles.divider}>
+          <span>New Volunteer?</span>
+        </div>
+
+        <button className={styles.btnSecondary} onClick={onRegister}>
+          Register as Volunteer
+        </button>
 
         <p className={styles.note}>
           🚨 For emergencies, give a missed call to <strong>1800-XXX-XXXX</strong> (toll free)

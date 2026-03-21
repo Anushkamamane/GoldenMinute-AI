@@ -1,0 +1,274 @@
+.wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.backBtn {
+  position: absolute;
+  left: 0;
+  top: -40px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.backBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateX(-4px);
+}
+
+.logo {
+  font-size: 48px;
+  margin-bottom: 10px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.title {
+  color: #333;
+  font-size: 28px;
+  margin: 10px 0;
+  font-weight: 700;
+}
+
+.sub {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input,
+.select {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input::placeholder {
+  color: #999;
+}
+
+.locationSection {
+  background: #f8f9ff;
+  padding: 16px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  gap: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionTitle {
+  color: #333;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.locationOptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btnOption {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: #666;
+}
+
+.btnOption:hover {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.btnOption.active {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+.coordFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn {
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #e74c3c;
+  font-size: 13px;
+  padding: 12px;
+  background: #fadbd8;
+  border-radius: 6px;
+  border-left: 4px solid #e74c3c;
+  margin: 0;
+}
+
+.success {
+  color: #27ae60;
+  font-size: 13px;
+  padding: 12px;
+  background: #d5f4e6;
+  border-radius: 6px;
+  border-left: 4px solid #27ae60;
+  margin: 0;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.note {
+  color: #666;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .logo {
+    font-size: 40px;
+  }
+
+  .coordFields,
+  .locationOptions {
+    grid-template-columns: 1fr;
+  }
+
+  .backBtn {
+    position: static;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+}

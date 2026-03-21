@@ -89,6 +89,43 @@
 
 .btn:hover { opacity: 0.88; }
 
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.btnSecondary {
+  width: 100%;
+  background: transparent;
+  color: var(--red);
+  border: 1.5px solid var(--red);
+  border-radius: 8px;
+  padding: 11px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 1.5rem;
+}
+
+.btnSecondary:hover {
+  background: var(--red);
+  color: #fff;
+}
+
 .note {
   font-size: 12px;
   color: var(--muted);
