@@ -80,6 +80,7 @@ export default function Dashboard({ onLogout }) {
             <span className={styles.timestamp}>
               Last updated: {new Date().toLocaleTimeString("en-IN")}
             </span>
+            <button onClick={onLogout} style={{background:"transparent",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(238,240,244,0.5)",padding:"6px 14px",borderRadius:"6px",cursor:"pointer",fontSize:"12px",fontFamily:"inherit",marginLeft:"12px"}}>← Logout</button>
           </div>
         </header>
 
