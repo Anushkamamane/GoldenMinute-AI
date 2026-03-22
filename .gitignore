@@ -34,3 +34,5 @@ logs/
 # ML models
 *.pkl
 *.joblib
+
+.vercel
