@@ -1,12 +1,11 @@
 import { useState } from "react";
 import styles from "./Login.module.css";
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, onVolunteer }) {
   const [password, setPassword] = useState("");
   const [error, setError]       = useState("");
 
   const submit = () => {
-    // In production: validate against Firebase Auth or backend JWT
     if (password === "admin123") {
       onLogin();
     } else {
@@ -37,8 +36,20 @@ export default function Login({ onLogin }) {
 
         <button className={styles.btn} onClick={submit}>Access Dashboard</button>
 
+        <button
+          onClick={onVolunteer}
+          style={{
+            width:"100%", background:"transparent",
+            border:"1px solid rgba(45,198,83,0.4)", color:"#2dc653",
+            borderRadius:"8px", padding:"10px", fontFamily:"inherit",
+            fontSize:"13px", cursor:"pointer", marginBottom:"1rem"
+          }}
+        >
+          Join as Volunteer →
+        </button>
+
         <p className={styles.note}>
-          🚨 For emergencies, give a missed call to <strong>1800-XXX-XXXX</strong> (toll free)
+          🚨 For emergencies, open the emergency form directly
         </p>
       </div>
     </div>
