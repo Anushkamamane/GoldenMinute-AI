@@ -1,10 +1,12 @@
 /**
  * GoldenMinute AI – API Service
  * Connects the React dashboard to the Flask backend.
- * Set REACT_APP_API_URL in your .env file.
+ *
+ * Default behavior uses React dev-server proxy (package.json -> proxy).
+ * Set REACT_APP_API_URL only when you need an explicit backend origin.
  */
 
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const BASE_URL = (process.env.REACT_APP_API_URL || "").replace(/\/$/, "");
 
 async function apiFetch(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
