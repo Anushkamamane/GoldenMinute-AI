@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "./EmergencyPage.module.css";
 
-const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const API = (process.env.REACT_APP_API_URL || "").replace(/\/$/, "");
 
 export default function EmergencyPage({ onBack }) {
   const [speech,    setSpeech]    = useState("");

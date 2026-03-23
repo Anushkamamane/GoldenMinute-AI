@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./VolunteerPortal.module.css";
 
-const API = "http://localhost:5000";
+const API = (process.env.REACT_APP_API_URL || "").replace(/\/$/, "");
 
 export default function VolunteerPortal({ onLogout }) {
   const [tab, setTab]             = useState("login");
